@@ -1,0 +1,235 @@
+openapi: "3.0.2"
+info:
+  title: Autos Api
+  version: "1.0"
+servers:
+  - url: localhost:8080
+paths:
+  /autos:
+    get:
+      summary: Search for for all autos(filters optional)
+      description: Returns a list of all automobiles, can be filtered with specific parameters such as make, color, etc
+      operationId: getAutomobiles
+      parameters:
+        - name: make
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: model
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: year
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: color
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: miles
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: preowned
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [ no, yes, cpo ]
+        - name: grade
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [ excellent, great, good, fair, poor ]
+        - name: price
+          in: query
+          required: false
+          schema:
+            type: number
+            format: currency
+            example: 32,000.00
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Automobiles'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Automobiles'
+        '204':
+          description: No automobiles found
+    post:
+      summary: Add an automobile
+      operationId: addAutomobile
+      requestBody:
+        description: Automobile object that is getting added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Automobile'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Automobile'
+      responses:
+        204:
+          description: Automobile added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Automobile'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Automobile'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error-Message'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error-Message'
+  /autos/{vin}:
+    get:
+      summary: Get automobile with specified VIN
+      operationId: getAutomobileByVin
+      parameters:
+        - name: vin
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Automobile returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Automobile'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Automobile'
+        404:
+          description: No automobile found
+    patch:
+      summary: Update automobile with specified VIN
+      operationId: updateAutomobileByVin
+      parameters:
+        - name: vin
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Changes to be patched
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Update'
+      responses:
+        204:
+          description: Automobile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Automobile'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Automobile'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error-Message'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error-Message'
+        404:
+          description: No automobile found
+    delete:
+      summary: Delete automobile with specified VIN
+      operationId: deleteAutomobileByVin
+      parameters:
+        - name: vin
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Automobile deleted
+        404:
+          description: No automobile found
+components:
+  schemas:
+    Automobile:
+      required:
+        - id
+        - make
+        - model
+        - year
+        - vin
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        make:
+          type: string
+          example: Chevrolet
+        model:
+          type: string
+          example: Corvette
+        year:
+          type: integer
+          format: int64
+        color:
+          type: string
+          example: green
+        miles:
+          type: integer
+          format: int64
+        vin:
+          type: string
+        preowned:
+          type: string
+          enum: [no, yes, cpo]
+        grade:
+          type: string
+          enum: [excellent, great, good, fair, poor]
+        price:
+          type: number
+          format: currency
+          example: 32,000.00
+    Automobiles:
+      type: array
+      description: List of automobiles
+      items:
+        $ref: '#/components/schemas/Automobile'
+    Update:
+      type: object
+      properties:
+        price:
+          type: number
+          format: currency
+          example: 32,000.00
+        preowned:
+          type: string
+          enum: [ no, yes, cpo ]
+    Error-Message:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
