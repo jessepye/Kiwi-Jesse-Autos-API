@@ -4,12 +4,12 @@ stages:
   - build
   - test
 build:
-    stage: build
-    script:
-      ./gradlew assemble
-    artifacts:
-      paths:
-        - build/libs/*.jar
+  stage: build
+  script:
+    ./gradlew assemble
+  artifacts:
+    paths:
+      - build/libs/*.jar
 test:
   stage: test
   script:
