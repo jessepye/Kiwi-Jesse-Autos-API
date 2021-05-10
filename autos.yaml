@@ -65,7 +65,7 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Automobiles'
-        '204':
+        '404':
           description: No automobiles found
     post:
       summary: Add an automobile
