@@ -54,7 +54,7 @@ paths:
           schema:
             type: number
             format: currency
-            example: 32,000.00
+            example: 32000.00
       responses:
         '200':
           description: OK
@@ -210,7 +210,7 @@ components:
         price:
           type: number
           format: currency
-          example: 32,000.00
+          example: 32000.00
     Automobiles:
       type: array
       description: List of automobiles
@@ -222,7 +222,7 @@ components:
         price:
           type: number
           format: currency
-          example: 32,000.00
+          example: 32000.00
         preowned:
           type: string
           enum: [ no, yes, cpo ]
