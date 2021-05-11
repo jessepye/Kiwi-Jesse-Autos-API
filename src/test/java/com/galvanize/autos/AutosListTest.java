@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -24,7 +23,7 @@ public class AutosListTest {
     public void get_noArgs_returnsAllAutomobiles() {
         assertEquals(true, autosList.isEmpty(), "Should return false for a new empty AutosList");
 
-        List<Automobile> testAutomobiles = new ArrayList<>();
+        ArrayList<Automobile> testAutomobiles = new ArrayList<>();
 
         for (int i = 0; i < 5; i++) {
             Automobile automobile = new Automobile(i, "Ford", "Mustang", 1967 + i, "ABC" + 12 + i);

@@ -1,5 +1,6 @@
 package com.galvanize.autos;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,10 +16,10 @@ public class AutosController {
     }
 
     @GetMapping
-    public AutosList getAutos() {
+    public ResponseEntity getAutos() {
         AutosList rtn = new AutosList(this.autosService.getAutos());
         rtn.setSearchParameters("all automobiles");
-        return rtn;
-    }
 
+        return rtn.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(rtn);
+    }
 }

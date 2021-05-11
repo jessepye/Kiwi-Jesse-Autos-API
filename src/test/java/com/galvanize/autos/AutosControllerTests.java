@@ -8,7 +8,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
@@ -26,7 +25,7 @@ public class AutosControllerTests {
     @MockBean
     AutosService autosService;
 
-    List<Automobile> autosList;
+    ArrayList<Automobile> autosList;
 
     @BeforeEach
     void setup() {
@@ -44,9 +43,17 @@ public class AutosControllerTests {
         when(autosService.getAutos()).thenReturn(autosList);
 
         mockMvc.perform(get("/autos"))
-            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.automobiles", hasSize(5)));
+    }
+
+    @Test
+    void getAutos_noArgs_none_returnsNoContent() throws Exception {
+        when(autosService.getAutos()).thenReturn(new ArrayList<Automobile>());
+
+        mockMvc.perform(get("/autos"))
+                .andDo(print())
+                .andExpect(status().isNoContent());
     }
 
 
