@@ -3,17 +3,17 @@ package com.galvanize.autos;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AutosList {
 
-    private ArrayList<Automobile> automobiles;
-    private String searchParameters;
+    private List<Automobile> automobiles;
 
     public AutosList() {
         this.automobiles = new ArrayList<>();
     }
 
-    public AutosList(ArrayList<Automobile> automobiles) {
+    public AutosList(List<Automobile> automobiles) {
         this.automobiles = automobiles;
     }
 
@@ -26,15 +26,7 @@ public class AutosList {
         return this.automobiles.size();
     }
 
-    public String getSearchParameters() {
-        return searchParameters;
-    }
-
-    public void setSearchParameters(String searchParameters) {
-        this.searchParameters = searchParameters;
-    }
-
-    public ArrayList<Automobile> getAutomobiles() {
+    public List<Automobile> getAutomobiles() {
         return this.automobiles;
     }
 

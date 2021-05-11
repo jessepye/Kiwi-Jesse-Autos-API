@@ -8,8 +8,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -25,7 +27,7 @@ public class AutosControllerTests {
     @MockBean
     AutosService autosService;
 
-    ArrayList<Automobile> autosList;
+    List<Automobile> autosList;
 
     @BeforeEach
     void setup() {
@@ -40,16 +42,17 @@ public class AutosControllerTests {
 
     @Test
     void getAutos_noArgs_exists_returnsAutosList() throws Exception {
-        when(autosService.getAutos()).thenReturn(autosList);
+        when(autosService.getAutos()).thenReturn(new AutosList(autosList));
 
         mockMvc.perform(get("/autos"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.automobiles", hasSize(5)));
     }
 
+    // GET: /autos no autos in database returns 204 no content
     @Test
     void getAutos_noArgs_none_returnsNoContent() throws Exception {
-        when(autosService.getAutos()).thenReturn(new ArrayList<Automobile>());
+        when(autosService.getAutos()).thenReturn(new AutosList());
 
         mockMvc.perform(get("/autos"))
                 .andDo(print())
@@ -57,10 +60,17 @@ public class AutosControllerTests {
     }
 
 
-    // GET: /autos no autos in database returns 204 no content
+    @Test
+    void getAutos_args_returnsAutosList() throws Exception {
+        when(autosService.getAutos(anyString(), anyString())).thenReturn(new AutosList(autosList));
+
+        mockMvc.perform(get("/autos?color=red&make=ford"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.automobiles", hasSize(5)));
+    }
+
     // GET: /autos?color=red returns all autos where color=red
     // GET: /autos?make=ford returns all autos where make=ford
-    // GET: /autos?make=chevrolet&color=blue returns all blue chevrolets
 // POST /autos:
     // adds an automobile to the database, returns newly created auto
     // returns error message (400) upon a bad request
