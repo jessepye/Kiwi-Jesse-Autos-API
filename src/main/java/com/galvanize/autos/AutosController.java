@@ -4,8 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.ElementCollection;
-
 @RestController
 @RequestMapping("/autos")
 public class AutosController {
@@ -32,6 +30,14 @@ public class AutosController {
     @PostMapping
     public Automobile addAuto(@RequestBody(required = true) Automobile automobile) {
         return this.autosService.addAuto(automobile);
+    }
+
+    @GetMapping("/{vin}")
+    public ResponseEntity<Automobile> getAuto(@PathVariable(required = true) String vin) {
+
+        return autosService.getAuto(vin) == null ?
+                ResponseEntity.noContent().build() : ResponseEntity.ok(autosService.getAuto(vin));
+
     }
 
     @ExceptionHandler

@@ -99,12 +99,27 @@ public class AutosControllerTests {
                 .andExpect(status().isBadRequest());
     }
 
-// POST /autos:
-    // adds an automobile to the database, returns newly created auto
-    // returns error message (400) upon a bad request
-// GET /autos/{vin}
-    // Returns the requested automobile
-    // Returns NoContent (204) if the vin is not found
+    @Test
+    void getAuto_withVin_returnsAuto() throws Exception {
+        Automobile automobile = new Automobile(4, "Toyota", "Supra", 1995, "ABC321");
+
+        when(autosService.getAuto(anyString())).thenReturn(automobile);
+
+        mockMvc.perform(get("/autos/"+automobile.getVin()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("vin").value(automobile.getVin()));
+    }
+
+    @Test
+    void getAuto_vinNotFound_returns204() throws Exception {
+        Automobile automobile = new Automobile(4, "Toyota", "Supra", 1995, "ABC321");
+
+        when(autosService.getAuto(anyString())).thenReturn(null);
+
+        mockMvc.perform(get("/autos/"+automobile.getVin()))
+                .andExpect(status().isNoContent());
+    }
+
 // PATCH /autos/{vin} - updates owner or color of vehicle
     // returns updated vehicle (200)
     // returns 204 if vehicle not found
