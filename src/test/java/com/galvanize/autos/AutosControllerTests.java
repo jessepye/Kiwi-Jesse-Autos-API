@@ -18,7 +18,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -63,7 +62,6 @@ public class AutosControllerTests {
         when(autosService.getAutos()).thenReturn(new AutosList());
 
         mockMvc.perform(get("/autos"))
-                .andDo(print())
                 .andExpect(status().isNoContent());
     }
 
@@ -85,11 +83,21 @@ public class AutosControllerTests {
         mockMvc.perform(post("/autos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(automobile)))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.make").value("Toyota"));
     }
 
+    @Test
+    void postAuto_badRequest_returns400() throws Exception {
+        Automobile automobile = new Automobile(4, "Toyota", "Supra", 1995, "ABC321");
+
+        when(autosService.addAuto(any(Automobile.class))).thenThrow(InvalidAutoExcepton.class);
+
+        mockMvc.perform(post("/autos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(automobile)))
+                .andExpect(status().isBadRequest());
+    }
 
 // POST /autos:
     // adds an automobile to the database, returns newly created auto
