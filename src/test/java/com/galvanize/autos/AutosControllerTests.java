@@ -1,19 +1,23 @@
 package com.galvanize.autos;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,6 +33,9 @@ public class AutosControllerTests {
 
     List<Automobile> autosList;
 
+    ObjectMapper objectMapper;
+
+
     @BeforeEach
     void setup() {
         autosList = new ArrayList<>();
@@ -38,6 +45,8 @@ public class AutosControllerTests {
                     1967 + i, "ABC" + 12 + i);
             autosList.add(automobile);
         }
+
+        objectMapper = new ObjectMapper();
     }
 
     @Test
@@ -49,7 +58,6 @@ public class AutosControllerTests {
             .andExpect(jsonPath("$.automobiles", hasSize(5)));
     }
 
-    // GET: /autos no autos in database returns 204 no content
     @Test
     void getAutos_noArgs_none_returnsNoContent() throws Exception {
         when(autosService.getAutos()).thenReturn(new AutosList());
@@ -58,7 +66,6 @@ public class AutosControllerTests {
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
-
 
     @Test
     void getAutos_args_returnsAutosList() throws Exception {
@@ -69,8 +76,21 @@ public class AutosControllerTests {
                 .andExpect(jsonPath("$.automobiles", hasSize(5)));
     }
 
-    // GET: /autos?color=red returns all autos where color=red
-    // GET: /autos?make=ford returns all autos where make=ford
+    @Test
+    void postAuto_valid_returnsAuto() throws Exception {
+        Automobile automobile = new Automobile(4, "Toyota", "Supra", 1995, "ABC321");
+
+        when(autosService.addAuto(any(Automobile.class))).thenReturn(automobile);
+
+        mockMvc.perform(post("/autos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(automobile)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.make").value("Toyota"));
+    }
+
+
 // POST /autos:
     // adds an automobile to the database, returns newly created auto
     // returns error message (400) upon a bad request

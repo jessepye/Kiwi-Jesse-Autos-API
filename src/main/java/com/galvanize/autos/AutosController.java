@@ -1,10 +1,7 @@
 package com.galvanize.autos;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/autos")
@@ -27,5 +24,10 @@ public class AutosController {
         }
 
         return rtn.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(rtn);
+    }
+
+    @PostMapping
+    public Automobile addAuto(@RequestBody(required = true) Automobile automobile) {
+        return this.autosService.addAuto(automobile);
     }
 }
