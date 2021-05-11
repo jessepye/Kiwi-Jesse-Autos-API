@@ -197,8 +197,7 @@ components:
           type: string
           example: green
         miles:
-          type: integer
-          format: int64
+          type: number
         vin:
           type: string
         preowned:

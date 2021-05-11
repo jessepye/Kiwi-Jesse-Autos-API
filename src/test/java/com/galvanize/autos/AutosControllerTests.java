@@ -1,34 +1,55 @@
 package com.galvanize.autos;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AutosController.class)
 public class AutosControllerTests {
+
     @Autowired
     MockMvc mockMvc;
 
-// GET /autos:
-    // GET: /autos no arguments returns all autos
+    @MockBean
+    AutosService autosService;
+
+    List<Automobile> autosList;
+
+    @BeforeEach
+    void setup() {
+        autosList = new ArrayList<>();
+
+        for (int i = 0; i < 5; i++) {
+            Automobile automobile = new Automobile(i, "Ford", "Mustang",
+                    1967 + i, "ABC" + 12 + i);
+            autosList.add(automobile);
+        }
+    }
+
     @Test
     void getAutos_noArgs_exists_returnsAutosList() throws Exception {
-        // Arrange
+        when(autosService.getAutos()).thenReturn(autosList);
 
-        // Act
-        mockMvc.perform(MockMvcRequestBuilders.get("/autos"))
-
-        // Assert
+        mockMvc.perform(get("/autos"))
+            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.automobiles", hasSize(5)));
     }
+
+
     // GET: /autos no autos in database returns 204 no content
     // GET: /autos?color=red returns all autos where color=red
     // GET: /autos?make=ford returns all autos where make=ford

@@ -8,9 +8,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/autos")
 public class AutosController {
 
+    AutosService autosService;
+
+    public AutosController(AutosService autosService) {
+        this.autosService = autosService;
+    }
+
     @GetMapping
     public AutosList getAutos() {
-        // AutosList autosList = Service.getAutos() // Service is an abstraction layer so we are not making calls directly to the database
-        return null;
+        AutosList rtn = new AutosList(this.autosService.getAutos());
+        rtn.setSearchParameters("all automobiles");
+        return rtn;
     }
+
 }
