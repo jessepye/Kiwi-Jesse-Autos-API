@@ -20,7 +20,7 @@ public class AutosService {
             return new AutosList(automobiles);
         }
 
-        return null;
+        return new AutosList();
     }
 
     public AutosList getAutos(String color, String make) {
@@ -30,7 +30,7 @@ public class AutosService {
             return new AutosList(automobiles);
         }
 
-        return null;
+        return new AutosList();
     }
 
     public Automobile addAuto(Automobile automobile) {
@@ -38,7 +38,7 @@ public class AutosService {
     }
 
     public Automobile getAuto(String vin) {
-        return null;
+        return autosRepository.findByVin(vin);
     }
 
     public Automobile updateAuto(String vin, int price, Preowned preowned) {
