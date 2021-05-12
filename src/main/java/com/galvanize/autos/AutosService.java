@@ -2,6 +2,8 @@ package com.galvanize.autos;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AutosService {
 
@@ -12,10 +14,22 @@ public class AutosService {
     }
 
     public AutosList getAutos() {
-        return new AutosList(autosRepository.findAll());
+        List<Automobile> automobiles = autosRepository.findAll();
+
+        if(!automobiles.isEmpty()) {
+            return new AutosList(automobiles);
+        }
+
+        return null;
     }
 
-    public AutosList getAutos(String anyString, String anyString1) {
+    public AutosList getAutos(String color, String make) {
+        List<Automobile> automobiles = autosRepository.findByColorContainsAndMakeContains(color, make);
+
+        if(!automobiles.isEmpty()) {
+            return new AutosList(automobiles);
+        }
+
         return null;
     }
 
