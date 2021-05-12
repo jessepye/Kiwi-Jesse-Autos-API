@@ -52,9 +52,9 @@ paths:
           in: query
           required: false
           schema:
-            type: number
-            format: currency
-            example: 32,000.00
+            type: integer
+            format: int64
+            example: 3200000
       responses:
         '200':
           description: OK
@@ -65,7 +65,7 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Automobiles'
-        '204':
+        '404':
           description: No automobiles found
     post:
       summary: Add an automobile
@@ -208,9 +208,9 @@ components:
           type: string
           enum: [excellent, great, good, fair, poor]
         price:
-          type: number
-          format: currency
-          example: 32,000.00
+          type: integer
+          format: int64
+          example: 32000.00
     Automobiles:
       type: array
       description: List of automobiles
@@ -220,9 +220,9 @@ components:
       type: object
       properties:
         price:
-          type: number
-          format: currency
-          example: 32,000.00
+          type: integer
+          format: int64
+          example: 3200000
         preowned:
           type: string
           enum: [ no, yes, cpo ]
