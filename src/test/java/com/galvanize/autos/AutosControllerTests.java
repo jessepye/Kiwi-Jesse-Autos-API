@@ -16,8 +16,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -143,7 +142,7 @@ public class AutosControllerTests {
 
     @Test
     void updateAuto_badRequest_returns400() throws Exception {
-        when(autosService.updateAuto(anyString(), anyInt(), any(Preowned.class))).thenThrow(InvalidAutoExcepton.class);
+        when(autosService.updateAuto(anyString(), anyInt(), any(Preowned.class))).thenThrow(InvalidAutoExcepton.class); // Why different from line 165?
 
         mockMvc.perform(patch("/autos/BADVIN")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -159,7 +158,11 @@ public class AutosControllerTests {
         verify(autosService).deleteAuto(anyString());
     }
 
-// DELETE /autos/{vin} - delete an automobile by its vin
-    // returns 202 when delete request is accepted
-    // returns 204 if vehicle is not found
+    @Test
+    void deleteAuto_notFound_returns204() throws Exception{
+        doThrow(InvalidAutoExcepton.class).when(autosService).deleteAuto(anyString());
+
+        mockMvc.perform(delete("/autos/BADVIN"))
+                .andExpect(status().isNoContent());
+    }
 }
