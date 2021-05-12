@@ -16,6 +16,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -131,7 +132,7 @@ public class AutosControllerTests {
     }
 
     @Test
-    void updateAuto_notFound_returns204() throws Exception {
+    void updateAuto_notFound_returns204() throws Exception{
         when(autosService.updateAuto(anyString(), anyInt(), any(Preowned.class))).thenReturn(null);
 
         mockMvc.perform(patch("/autos/ABC123")
@@ -148,6 +149,14 @@ public class AutosControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateAutoRequest)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deleteAuto_accepted_returns202() throws Exception {
+        mockMvc.perform(delete("/autos/GOODVIN"))
+                .andExpect(status().isAccepted());
+
+        verify(autosService).deleteAuto(anyString());
     }
 
 // DELETE /autos/{vin} - delete an automobile by its vin

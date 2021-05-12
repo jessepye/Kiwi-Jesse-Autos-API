@@ -23,4 +23,7 @@ public class AutosService {
     public Automobile updateAuto(String vin, int price, Preowned preowned) {
         return null;
     }
+
+    public void deleteAuto(String vin) {
+    }
 }
