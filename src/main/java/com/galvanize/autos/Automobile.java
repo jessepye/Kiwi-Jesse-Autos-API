@@ -1,7 +1,5 @@
 package com.galvanize.autos;
 
-import java.math.BigDecimal;
-import java.util.Currency;
 
 @SuppressWarnings("unused")
 public class Automobile {
@@ -15,7 +13,7 @@ public class Automobile {
     private String vin;
     private Preowned preowned;
     private Grade grade;
-    private Currency price;
+    private int price;
 
     public Automobile() {
 
@@ -101,11 +99,11 @@ public class Automobile {
         this.grade = grade;
     }
 
-    public Currency getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(Currency price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 

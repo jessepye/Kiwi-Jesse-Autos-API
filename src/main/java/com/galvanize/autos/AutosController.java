@@ -28,16 +28,22 @@ public class AutosController {
     }
 
     @PostMapping
-    public Automobile addAuto(@RequestBody(required = true) Automobile automobile) {
+    public Automobile addAuto(@RequestBody Automobile automobile) {
         return this.autosService.addAuto(automobile);
     }
 
     @GetMapping("/{vin}")
-    public ResponseEntity<Automobile> getAuto(@PathVariable(required = true) String vin) {
+    public ResponseEntity<Automobile> getAuto(@PathVariable String vin) {
 
         return autosService.getAuto(vin) == null ?
                 ResponseEntity.noContent().build() : ResponseEntity.ok(autosService.getAuto(vin));
+    }
 
+    @PatchMapping("/{vin}")
+    public ResponseEntity<Automobile> updateAuto(@PathVariable String vin, @RequestBody UpdateAutoRequest update) {
+        Automobile automobile = autosService.updateAuto(vin, update.getPrice(), update.getPreowned());
+
+        return automobile == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(automobile);
     }
 
     @ExceptionHandler

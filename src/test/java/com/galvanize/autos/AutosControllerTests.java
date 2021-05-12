@@ -8,16 +8,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.servlet.handler.MatchableHandlerMapping;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,10 +31,10 @@ public class AutosControllerTests {
     @MockBean
     AutosService autosService;
 
+    Automobile automobile;
     List<Automobile> autosList;
-
     ObjectMapper objectMapper;
-
+    UpdateAutoRequest updateAutoRequest;
 
     @BeforeEach
     void setup() {
@@ -45,6 +46,8 @@ public class AutosControllerTests {
             autosList.add(automobile);
         }
 
+        automobile = new Automobile(4, "Toyota", "Supra", 1995, "ABC321");
+        updateAutoRequest = new UpdateAutoRequest(1234500, Preowned.CPO);
         objectMapper = new ObjectMapper();
     }
 
@@ -76,8 +79,6 @@ public class AutosControllerTests {
 
     @Test
     void postAuto_valid_returnsAuto() throws Exception {
-        Automobile automobile = new Automobile(4, "Toyota", "Supra", 1995, "ABC321");
-
         when(autosService.addAuto(any(Automobile.class))).thenReturn(automobile);
 
         mockMvc.perform(post("/autos")
@@ -89,8 +90,6 @@ public class AutosControllerTests {
 
     @Test
     void postAuto_badRequest_returns400() throws Exception {
-        Automobile automobile = new Automobile(4, "Toyota", "Supra", 1995, "ABC321");
-
         when(autosService.addAuto(any(Automobile.class))).thenThrow(InvalidAutoExcepton.class);
 
         mockMvc.perform(post("/autos")
@@ -101,8 +100,6 @@ public class AutosControllerTests {
 
     @Test
     void getAuto_withVin_returnsAuto() throws Exception {
-        Automobile automobile = new Automobile(4, "Toyota", "Supra", 1995, "ABC321");
-
         when(autosService.getAuto(anyString())).thenReturn(automobile);
 
         mockMvc.perform(get("/autos/"+automobile.getVin()))
@@ -112,18 +109,47 @@ public class AutosControllerTests {
 
     @Test
     void getAuto_vinNotFound_returns204() throws Exception {
-        Automobile automobile = new Automobile(4, "Toyota", "Supra", 1995, "ABC321");
-
         when(autosService.getAuto(anyString())).thenReturn(null);
 
         mockMvc.perform(get("/autos/"+automobile.getVin()))
                 .andExpect(status().isNoContent());
     }
 
-// PATCH /autos/{vin} - updates owner or color of vehicle
-    // returns updated vehicle (200)
-    // returns 204 if vehicle not found
-    // returns 400 if given a bad request
+    @Test
+    void updateAuto_withObject_returnsAuto() throws Exception {
+        automobile.setPrice(updateAutoRequest.getPrice());
+        automobile.setPreowned(updateAutoRequest.getPreowned());
+
+        when(autosService.updateAuto(anyString(), anyInt(), any(Preowned.class))).thenReturn(automobile);
+
+        mockMvc.perform(patch("/autos/"+automobile.getVin())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateAutoRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("price").value(automobile.getPrice()))
+                .andExpect(jsonPath("preowned").value(automobile.getPreowned().toString()));
+    }
+
+    @Test
+    void updateAuto_notFound_returns204() throws Exception {
+        when(autosService.updateAuto(anyString(), anyInt(), any(Preowned.class))).thenReturn(null);
+
+        mockMvc.perform(patch("/autos/ABC123")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateAutoRequest)))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void updateAuto_badRequest_returns400() throws Exception {
+        when(autosService.updateAuto(anyString(), anyInt(), any(Preowned.class))).thenThrow(InvalidAutoExcepton.class);
+
+        mockMvc.perform(patch("/autos/BADVIN")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateAutoRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
 // DELETE /autos/{vin} - delete an automobile by its vin
     // returns 202 when delete request is accepted
     // returns 204 if vehicle is not found
