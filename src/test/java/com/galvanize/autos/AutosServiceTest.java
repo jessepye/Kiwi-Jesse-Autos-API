@@ -92,7 +92,7 @@ class AutosServiceTest {
     }
 
     @Test
-    void addAuto_invalid_returnsAuto() {
+    void addAuto_invalid_throwsException() {
         when(autosRepository.save(any(Automobile.class))).thenThrow(InvalidAutoException.class);
 
         assertThatThrownBy(() -> {

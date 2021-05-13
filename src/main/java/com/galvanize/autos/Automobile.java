@@ -121,7 +121,7 @@ public class Automobile {
                 ", year='" + this.year + '\'' +
                 ", color='" + this.color + '\'' +
                 ", miles='" + this.miles + '\'' +
-                ", vin='" + this.preowned + '\'' +
+                ", vin='" + this.vin + '\'' +
                 ", preowned='" + this.preowned + '\'' +
                 ", grade='" + this.grade + '\'' +
                 ", price='" + this.price + '\'' +

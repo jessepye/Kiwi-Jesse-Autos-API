@@ -6,10 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,17 +23,22 @@ class AutosApiApplicationTests {
 
     @Autowired
     AutosRepository autosRepository;
+    RestTemplate patchRestTemplate;
 
     List<Automobile> automobiles;
     Random random;
+    Automobile automobile;
 
     @BeforeEach
     void setUp() {
         String[] make = {"Ford", "Chevrolet", "Dodge", "BMW", "Audi", "Mercedes", "Lexus", "Infiniti", "Acura"};
         String[] model = {"Compact", "Sedan", "SUV", "Truck", "Coupe"};
 
+        this.patchRestTemplate = testRestTemplate.getRestTemplate();
+
         automobiles = new ArrayList<>();
         random = new Random();
+        automobile = new Automobile("Toyota", "Corolla", 2014, "VINNY");
 
         for (int i = 0; i < 50; i++) {
             automobiles.add(new Automobile(make[random.nextInt(9)], model[random.nextInt(5)],
@@ -77,12 +80,60 @@ class AutosApiApplicationTests {
         assertThat(response.getBody()).isNull();
     }
 
-//    @Test
-//    void postAutos_validArg_returnsAuto() {
-//        Automobile newAuto = new Automobile("Toyota", "Corolla", 2014, "VINNY");
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-//        ResponseEntity<AutosList> response = testRestTemplate.postForEntity("/autos", request, AutosList.class);
-//    }
+    @Test
+    void postAutos_validArg_returnsAuto() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+        HttpEntity<Automobile> request = new HttpEntity<>(automobile, headers);
+
+        ResponseEntity<Automobile> response = testRestTemplate.postForEntity("/autos", request, Automobile.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getVin()).isEqualTo(automobile.getVin());
+    }
+
+    @Test
+    void postAutos_badRequest_returns400() {
+        automobile.setVin("$BADVIN");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+        HttpEntity<Automobile> request = new HttpEntity<>(new Automobile(), headers);
+
+        ResponseEntity<Automobile> response = testRestTemplate.postForEntity("/autos", request, Automobile.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void getAutos_byVin_returnsAuto() {
+        ResponseEntity<Automobile> response = testRestTemplate.getForEntity("/autos/VIN7", Automobile.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getVin()).isEqualTo(autosRepository.findByVin("VIN7").get().getVin());
+    }
+
+    @Test
+    void getAutos_byVin_noneExists_returns204() {
+        ResponseEntity<Automobile> response = testRestTemplate.getForEntity("/autos/VIN6", Automobile.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
+
+    @Test
+    void updateAutos_withObject_returnsAuto() {
+        automobile = new Automobile("Toyota", "Corolla", 2014, "VIN7");
+        automobile.setPrice(7654300);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+        HttpEntity<Automobile> request = new HttpEntity<>(automobile, headers);
+
+        ResponseEntity<Automobile> response = testRestTemplate.exchange("/autos/VIN7", HttpMethod.PATCH,
+                request, Automobile.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getPrice()).isEqualTo(7654300);
+
+    }
 }
