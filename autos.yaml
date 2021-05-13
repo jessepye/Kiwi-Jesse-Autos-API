@@ -65,8 +65,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Automobiles'
-        '404':
-          description: No automobiles found
+        204:
+          description: No automobile found
     post:
       summary: Add an automobile
       operationId: addAutomobile
@@ -118,7 +118,7 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Automobile'
-        404:
+        204:
           description: No automobile found
     patch:
       summary: Update automobile with specified VIN
@@ -136,7 +136,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Update'
       responses:
-        204:
+        200:
           description: Automobile updated
           content:
             application/json:
@@ -145,6 +145,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Automobile'
+        204:
+          description: No automobile found
         400:
           description: Invalid input
           content:
@@ -154,8 +156,6 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Error-Message'
-        404:
-          description: No automobile found
     delete:
       summary: Delete automobile with specified VIN
       operationId: deleteAutomobileByVin
@@ -166,9 +166,9 @@ paths:
           schema:
             type: string
       responses:
-        204:
+        202:
           description: Automobile deleted
-        404:
+        204:
           description: No automobile found
 components:
   schemas:
