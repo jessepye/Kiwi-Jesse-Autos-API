@@ -35,6 +35,10 @@ public class AutosService {
     }
 
     public Automobile addAuto(Automobile automobile) {
+        if (automobile.getVin() == null || !automobile.getVin().matches("^[a-zA-Z0-9]*$")) {
+            throw new InvalidAutoException();
+        }
+
         return autosRepository.save(automobile);
     }
 

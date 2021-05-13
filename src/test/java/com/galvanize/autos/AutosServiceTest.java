@@ -29,7 +29,7 @@ class AutosServiceTest {
     @BeforeEach
     void setup() {
         autosService = new AutosService(autosRepository);
-        automobile = new Automobile(4, "Toyota", "Supra", 1995, "ABC321");
+        automobile = new Automobile("Toyota", "Supra", 1995, "ABC321");
     }
 
     @Test
@@ -92,7 +92,7 @@ class AutosServiceTest {
     }
 
     @Test
-    void addAuto_invalid_returnsAuto() {
+    void addAuto_invalid_throwsException() {
         when(autosRepository.save(any(Automobile.class))).thenThrow(InvalidAutoException.class);
 
         assertThatThrownBy(() -> {
@@ -114,7 +114,7 @@ class AutosServiceTest {
     void updateAuto_successful_returnsUpdate() {
         when(autosRepository.findByVin(anyString())).thenReturn(java.util.Optional.ofNullable(automobile));
 
-        Automobile updatedFromDatabaseAuto = new Automobile(4, "Toyota", "Supra", 1995, "ABC321");
+        Automobile updatedFromDatabaseAuto = new Automobile("Toyota", "Supra", 1995, "ABC321");
         updatedFromDatabaseAuto.setPrice(1234500);
         updatedFromDatabaseAuto.setPreowned(Preowned.CPO);
 
