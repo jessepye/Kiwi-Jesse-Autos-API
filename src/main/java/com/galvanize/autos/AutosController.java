@@ -51,14 +51,14 @@ public class AutosController {
         try {
             autosService.deleteAuto(vin);
             return ResponseEntity.accepted().build();
-        } catch (InvalidAutoExcepton e) {
+        } catch (InvalidAutoException e) {
             return ResponseEntity.noContent().build();
         }
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public void invalidAutoExceptionHandler(InvalidAutoExcepton e) {
+    public void invalidAutoExceptionHandler(InvalidAutoException e) {
 
     }
 }
