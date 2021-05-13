@@ -55,5 +55,12 @@ public class AutosService {
     }
 
     public void deleteAuto(String vin) {
+        Optional<Automobile> oFoundAutomobile = autosRepository.findByVin(vin);
+
+        if (oFoundAutomobile.isPresent()) {
+            autosRepository.delete(oFoundAutomobile.get());
+        } else {
+            throw new InvalidAutoExcepton();
+        }
     }
 }

@@ -9,10 +9,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -145,6 +145,21 @@ class AutosServiceTest {
     }
 
     @Test
-    void deleteAuto() {
+    void deleteAuto_success() {
+        when(autosRepository.findByVin(anyString())).thenReturn(java.util.Optional.of(automobile));
+
+        autosService.deleteAuto(automobile.getVin());
+
+        verify(autosRepository).delete(any(Automobile.class));
+    }
+
+    @Test
+    void deleteAuto_fails_throwsInvalidAutoException() {
+        when(autosRepository.findByVin(anyString())).thenReturn(java.util.Optional.empty());
+
+        assertThatExceptionOfType(InvalidAutoExcepton.class)
+                .isThrownBy(() -> {
+            autosService.deleteAuto("BADVIN");
+        });
     }
 }
