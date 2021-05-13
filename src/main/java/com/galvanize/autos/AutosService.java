@@ -3,6 +3,7 @@ package com.galvanize.autos;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AutosService {
@@ -38,11 +39,19 @@ public class AutosService {
     }
 
     public Automobile getAuto(String vin) {
-        return autosRepository.findByVin(vin);
+        return autosRepository.findByVin(vin).orElse(null);
     }
 
     public Automobile updateAuto(String vin, int price, Preowned preowned) {
-        return null;
+        Optional<Automobile> oFoundAutomobile = autosRepository.findByVin(vin);
+
+        if (oFoundAutomobile.isPresent()) {
+            oFoundAutomobile.get().setPrice(price);
+            oFoundAutomobile.get().setPreowned(preowned);
+            return autosRepository.save(oFoundAutomobile.get());
+        } else {
+            return null;
+        }
     }
 
     public void deleteAuto(String vin) {

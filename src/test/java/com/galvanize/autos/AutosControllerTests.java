@@ -130,6 +130,7 @@ public class AutosControllerTests {
                 .andExpect(jsonPath("preowned").value(automobile.getPreowned().toString()));
     }
 
+    // UPDATE localhost:3000/autos/VIN_THATS_NOT_IN_DB/?price=1234500
     @Test
     void updateAuto_notFound_returns204() throws Exception{
         when(autosService.updateAuto(anyString(), anyInt(), any(Preowned.class))).thenReturn(null);
@@ -140,6 +141,7 @@ public class AutosControllerTests {
                 .andExpect(status().isNoContent());
     }
 
+    // UPDATE localhost:3000/autos/GOODVIN/?somethingthatdoesntexist=1234500
     @Test
     void updateAuto_badRequest_returns400() throws Exception {
         when(autosService.updateAuto(anyString(), anyInt(), any(Preowned.class))).thenThrow(InvalidAutoExcepton.class); // Why different from line 165?
