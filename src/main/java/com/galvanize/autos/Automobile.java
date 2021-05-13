@@ -1,6 +1,5 @@
 package com.galvanize.autos;
 
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import javax.persistence.*;
