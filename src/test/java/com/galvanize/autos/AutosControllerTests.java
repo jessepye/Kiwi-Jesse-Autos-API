@@ -39,12 +39,12 @@ public class AutosControllerTests {
         autosList = new ArrayList<>();
 
         for (int i = 0; i < 5; i++) {
-            Automobile automobile = new Automobile(i, "Ford", "Mustang",
+            Automobile automobile = new Automobile("Ford", "Mustang",
                     1967 + i, "ABC" + 12 + i);
             autosList.add(automobile);
         }
 
-        automobile = new Automobile(4, "Toyota", "Supra", 1995, "ABC321");
+        automobile = new Automobile("Toyota", "Supra", 1995, "ABC321");
         updateAutoRequest = new UpdateAutoRequest(1234500, Preowned.CPO);
         objectMapper = new ObjectMapper();
     }

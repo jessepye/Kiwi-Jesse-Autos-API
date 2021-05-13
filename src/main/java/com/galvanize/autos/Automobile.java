@@ -1,10 +1,17 @@
 package com.galvanize.autos;
 
 
-@SuppressWarnings("unused")
-public class Automobile {
+import com.fasterxml.jackson.annotation.JsonInclude;
 
-    private int id;
+import javax.persistence.*;
+
+@Entity
+@Table(name = "automobiles")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Automobile {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String make;
     private String model;
     private int year;
@@ -19,19 +26,18 @@ public class Automobile {
 
     }
 
-    public Automobile(int id, String make, String model, int year, String vin) {
-        this.id = id;
+    public Automobile(String make, String model, int year, String vin) {
         this.make = make;
         this.model = model;
         this.year = year;
         this.vin = vin;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

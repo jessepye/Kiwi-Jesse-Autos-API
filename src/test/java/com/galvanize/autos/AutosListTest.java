@@ -26,7 +26,7 @@ public class AutosListTest {
         ArrayList<Automobile> testAutomobiles = new ArrayList<>();
 
         for (int i = 0; i < 5; i++) {
-            Automobile automobile = new Automobile(i, "Ford", "Mustang", 1967 + i, "ABC" + 12 + i);
+            Automobile automobile = new Automobile("Ford", "Mustang", 1967 + i, "ABC" + 12 + i);
             testAutomobiles.add(automobile);
         }
 
