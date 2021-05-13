@@ -8,9 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.servlet.handler.MatchableHandlerMapping;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,7 +88,7 @@ public class AutosControllerTests {
 
     @Test
     void postAuto_badRequest_returns400() throws Exception {
-        when(autosService.addAuto(any(Automobile.class))).thenThrow(InvalidAutoExcepton.class);
+        when(autosService.addAuto(any(Automobile.class))).thenThrow(InvalidAutoException.class);
 
         mockMvc.perform(post("/autos")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -144,7 +142,7 @@ public class AutosControllerTests {
     // UPDATE localhost:3000/autos/GOODVIN/?somethingthatdoesntexist=1234500
     @Test
     void updateAuto_badRequest_returns400() throws Exception {
-        when(autosService.updateAuto(anyString(), anyInt(), any(Preowned.class))).thenThrow(InvalidAutoExcepton.class); // Why different from line 165?
+        when(autosService.updateAuto(anyString(), anyInt(), any(Preowned.class))).thenThrow(InvalidAutoException.class); // Why different from line 165?
 
         mockMvc.perform(patch("/autos/BADVIN")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -162,7 +160,7 @@ public class AutosControllerTests {
 
     @Test
     void deleteAuto_notFound_returns204() throws Exception{
-        doThrow(InvalidAutoExcepton.class).when(autosService).deleteAuto(anyString());
+        doThrow(InvalidAutoException.class).when(autosService).deleteAuto(anyString());
 
         mockMvc.perform(delete("/autos/BADVIN"))
                 .andExpect(status().isNoContent());

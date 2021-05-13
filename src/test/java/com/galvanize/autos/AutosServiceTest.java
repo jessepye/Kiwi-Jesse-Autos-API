@@ -93,11 +93,11 @@ class AutosServiceTest {
 
     @Test
     void addAuto_invalid_returnsAuto() {
-        when(autosRepository.save(any(Automobile.class))).thenThrow(InvalidAutoExcepton.class);
+        when(autosRepository.save(any(Automobile.class))).thenThrow(InvalidAutoException.class);
 
         assertThatThrownBy(() -> {
             autosService.addAuto(automobile);
-        }).isInstanceOf(InvalidAutoExcepton.class);
+        }).isInstanceOf(InvalidAutoException.class);
     }
 
     @Test
@@ -140,8 +140,11 @@ class AutosServiceTest {
     }
 
     @Test
-    void updateAuto_badRequest() {
-
+    void updateAuto_badRequest_throwsInvalidAutoException() {
+        assertThatExceptionOfType(InvalidAutoException.class)
+                .isThrownBy(() -> {
+                    autosService.updateAuto("$BADVIN", 1234500, Preowned.CPO);
+                });
     }
 
     @Test
@@ -157,7 +160,7 @@ class AutosServiceTest {
     void deleteAuto_fails_throwsInvalidAutoException() {
         when(autosRepository.findByVin(anyString())).thenReturn(java.util.Optional.empty());
 
-        assertThatExceptionOfType(InvalidAutoExcepton.class)
+        assertThatExceptionOfType(InvalidAutoException.class)
                 .isThrownBy(() -> {
             autosService.deleteAuto("BADVIN");
         });

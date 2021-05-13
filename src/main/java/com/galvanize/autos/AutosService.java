@@ -43,6 +43,10 @@ public class AutosService {
     }
 
     public Automobile updateAuto(String vin, int price, Preowned preowned) {
+        if (!vin.matches("^[a-zA-Z0-9]*$")) { // VIN may only contain letters and numbers
+            throw new InvalidAutoException();
+        }
+
         Optional<Automobile> oFoundAutomobile = autosRepository.findByVin(vin);
 
         if (oFoundAutomobile.isPresent()) {
@@ -60,7 +64,7 @@ public class AutosService {
         if (oFoundAutomobile.isPresent()) {
             autosRepository.delete(oFoundAutomobile.get());
         } else {
-            throw new InvalidAutoExcepton();
+            throw new InvalidAutoException();
         }
     }
 }
