@@ -19,13 +19,13 @@ test:
     paths:
       - build/test-results/test/TEST*.xml
 deploy:
+  production:
   stage: deploy
   image: ruby:latest
   script:
     - apt-get update -qy
     - apt-get install -y ruby-dev
     - gem install dpl
-    #                        App name from prev step  Key from your heroku account
     - dpl --provider=heroku --app=vw-autos-api --api-key=$HEROKU_API_KEY
-  only: # Heroku will ONLY deploy from main or master branch!
+  only:
     - master
