@@ -16,6 +16,7 @@ public class Automobile {
     private int year;
     private String color;
     private double miles;
+    @Column(unique = true)
     private String vin;
     private Preowned preowned;
     private Grade grade;
