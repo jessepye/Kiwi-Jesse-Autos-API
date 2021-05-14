@@ -136,4 +136,19 @@ class AutosApiApplicationTests {
         assertThat(response.getBody().getPrice()).isEqualTo(7654300);
 
     }
+
+    @Test
+    void updateAutos_notFound_returns204() {
+        automobile = new Automobile("Toyota", "Corolla", 2014, "VIN7");
+        automobile.setPrice(7654300);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+        HttpEntity<Automobile> request = new HttpEntity<>(automobile, headers);
+
+        ResponseEntity<Automobile> response = testRestTemplate.exchange("/autos/VIN6", HttpMethod.PATCH,
+                request, Automobile.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
 }
