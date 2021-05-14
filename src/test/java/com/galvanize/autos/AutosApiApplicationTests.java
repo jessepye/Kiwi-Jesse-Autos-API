@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,6 @@ class AutosApiApplicationTests {
 
     @Autowired
     AutosRepository autosRepository;
-    RestTemplate patchRestTemplate;
 
     List<Automobile> automobiles;
     Random random;
@@ -33,8 +31,6 @@ class AutosApiApplicationTests {
     void setUp() {
         String[] make = {"Ford", "Chevrolet", "Dodge", "BMW", "Audi", "Mercedes", "Lexus", "Infiniti", "Acura"};
         String[] model = {"Compact", "Sedan", "SUV", "Truck", "Coupe"};
-
-        this.patchRestTemplate = testRestTemplate.getRestTemplate();
 
         automobiles = new ArrayList<>();
         random = new Random();
@@ -64,10 +60,6 @@ class AutosApiApplicationTests {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().isEmpty()).isFalse();
-
-//        for (Automobile auto: response.getBody().getAutomobiles()) {
-//            System.out.println(auto);
-//        }
     }
 
     @Test
@@ -165,5 +157,14 @@ class AutosApiApplicationTests {
                 request, Automobile.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void deleteAutos_accepted_returns202() {
+        ResponseEntity<Void> response = testRestTemplate.exchange("/autos/Vin7",
+                HttpMethod.DELETE, new HttpEntity<>(new HttpHeaders()), Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
     }
 }
