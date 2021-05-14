@@ -161,7 +161,16 @@ class AutosApiApplicationTests {
 
     @Test
     void deleteAutos_accepted_returns202() {
-        ResponseEntity<Void> response = testRestTemplate.exchange("/autos/Vin7",
+        ResponseEntity<Void> response = testRestTemplate.exchange("/autos/VIN7",
+                HttpMethod.DELETE, new HttpEntity<>(new HttpHeaders()), Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
+
+    }
+
+    @Test
+    void deleteAutos_notFound_returns204() {
+        ResponseEntity<Void> response = testRestTemplate.exchange("/autos/$Vin7",
                 HttpMethod.DELETE, new HttpEntity<>(new HttpHeaders()), Void.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
