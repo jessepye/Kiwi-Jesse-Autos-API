@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jesse-simple-autos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jesse-simple-autos
+  template:
+    metadata:
+      labels:
+        app: jesse-simple-autos
+    spec:
+      containers:
+        - image: registry.gitlab.com/galv-vmw-apr-2021/2-simple-autos/kiwi-jesse-autos-api:latest
+          name: jesse-simple-autos
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: 52.26.72.203
+            - name: DB_NAME
+              value: jpye
+            - name: DB_USER
+              value: jpye_user
+            - name: DB_PWD
+              value: Ldy6wL-G5qg;F-E
+      imagePullSecrets: # Be sure the token name matches what you created on K8s
+        - name: k8s-jesse
