@@ -24,6 +24,16 @@ public class AutosService {
         return new AutosList();
     }
 
+    public AutosList getAutos(String make) {
+        List<Automobile> automobiles = autosRepository.findByMakeContains(make);
+
+        if(!automobiles.isEmpty()) {
+            return new AutosList(automobiles);
+        }
+
+        return new AutosList();
+    }
+
     public AutosList getAutos(String color, String make) {
         List<Automobile> automobiles = autosRepository.findByColorContainsAndMakeContains(color, make);
 
