@@ -21,6 +21,8 @@ public class AutosController {
         AutosList rtn;
         if (color == null && make == null) {
             rtn = this.autosService.getAutos();
+        } else if (color == null) {
+            rtn = this.autosService.getAutos(make);
         } else {
             rtn = this.autosService.getAutos(color, make);
         }
