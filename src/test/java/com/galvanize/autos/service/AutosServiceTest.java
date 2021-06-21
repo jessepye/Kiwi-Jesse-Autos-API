@@ -1,5 +1,11 @@
-package com.galvanize.autos;
+package com.galvanize.autos.service;
 
+import com.galvanize.autos.exception.InvalidAutoException;
+import com.galvanize.autos.model.Automobile;
+import com.galvanize.autos.model.AutosList;
+import com.galvanize.autos.model.Grade;
+import com.galvanize.autos.model.Preowned;
+import com.galvanize.autos.repository.AutosRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,7 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -15,10 +21,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
 @ExtendWith(MockitoExtension.class)
 class AutosServiceTest {
-
     AutosService autosService;
 
     @Mock
@@ -26,69 +30,73 @@ class AutosServiceTest {
 
     Automobile automobile;
 
+    List<Automobile> automobiles;
+
     @BeforeEach
     void setup() {
         autosService = new AutosService(autosRepository);
         automobile = new Automobile("Toyota", "Supra", 1995, "ABC321");
+        automobiles = new ArrayList<>();
     }
 
     @Test
     void getAutos_hasContent_returnsList() {
-        when(autosRepository.findAll()).thenReturn(Arrays.asList(automobile));
+        automobiles.add(automobile);
 
-        AutosList autosList = autosService.getAutos();
+        when(autosRepository.findAll()).thenReturn(automobiles);
 
-        assertThat(autosList).isNotNull();
-        assertThat(autosList.isEmpty()).isFalse();
-        assertThat(autosList.getCount()).isEqualTo(1);
+        AutosList actual = autosService.getAutos();
+
+        assertThat(actual).isNotNull();
+        assertThat(actual.isEmpty()).isFalse();
+        assertThat(actual.getCount()).isEqualTo(1);
     }
 
     @Test
     void getAutos_noContent_returnsEmptyList() {
-        when(autosRepository.findAll()).thenReturn(new ArrayList<Automobile>());
+        when(autosRepository.findAll()).thenReturn(automobiles);
 
-        AutosList autosList = autosService.getAutos();
+        AutosList actual = autosService.getAutos();
 
-        assertThat(autosList).isNotNull();
-        assertThat(autosList.isEmpty()).isTrue();
+        assertThat(actual).isNotNull();
+        assertThat(actual.isEmpty()).isTrue();
     }
 
     @Test
     void getAutos_search_hasContent_returnsList() {
         automobile.setColor("White");
+        automobiles.add(automobile);
 
         when(autosRepository.findByColorContainsAndMakeContains(anyString(), anyString()))
-                .thenReturn(Arrays.asList(automobile));
+                .thenReturn(automobiles);
 
-        AutosList autosList = autosService.getAutos("White", "Toyota");
+        AutosList actual = autosService.getAutos("White", "Toyota");
 
-        assertThat(autosList).isNotNull();
-        assertThat(autosList.isEmpty()).isFalse();
-        assertThat(autosList.getAutomobiles().get(0).getColor()).isEqualTo("White");
-        assertThat(autosList.getAutomobiles().get(0).getMake()).isEqualTo("Toyota");
+        assertThat(actual).isNotNull();
+        assertThat(actual.isEmpty()).isFalse();
+        assertThat(actual.getAutomobiles().get(0).getColor()).isEqualTo("White");
+        assertThat(actual.getAutomobiles().get(0).getMake()).isEqualTo("Toyota");
     }
 
     @Test
     void getAutos_search_noContent_returnsList() {
-        automobile.setColor("White");
-
         when(autosRepository.findByColorContainsAndMakeContains(anyString(), anyString()))
                 .thenReturn(new ArrayList<Automobile>());
 
-        AutosList autosList = autosService.getAutos("White", "Toyota");
+        AutosList actual = autosService.getAutos("White", "Toyota");
 
-        assertThat(autosList).isNotNull();
-        assertThat(autosList.isEmpty()).isTrue();
+        assertThat(actual).isNotNull();
+        assertThat(actual.isEmpty()).isTrue();
     }
 
     @Test
     void addAuto_valid_returnsAuto() {
         when(autosRepository.save(any(Automobile.class))).thenReturn(automobile);
 
-        Automobile savedAuto = autosService.addAuto(automobile);
+        Automobile actual = autosService.addAuto(automobile);
 
-        assertThat(savedAuto).isNotNull();
-        assertThat(savedAuto.getVin()).isEqualTo(automobile.getVin());
+        assertThat(actual).isNotNull();
+        assertThat(actual.getVin()).isEqualTo(automobile.getVin());
     }
 
     @Test
@@ -104,46 +112,45 @@ class AutosServiceTest {
     void getAuto_byVin_returnsAuto() {
         when(autosRepository.findByVin(anyString())).thenReturn(java.util.Optional.ofNullable(automobile));
 
-        Automobile foundAuto = autosService.getAuto(automobile.getVin());
+        Automobile actual = autosService.getAuto(automobile.getVin());
 
-        assertThat(foundAuto).isNotNull();
-        assertThat(foundAuto.getVin()).isEqualTo(automobile.getVin());
+        assertThat(actual).isNotNull();
+        assertThat(actual.getVin()).isEqualTo(automobile.getVin());
     }
 
     @Test
     void updateAuto_successful_returnsUpdate() {
         when(autosRepository.findByVin(anyString())).thenReturn(java.util.Optional.ofNullable(automobile));
 
-        Automobile updatedFromDatabaseAuto = new Automobile("Toyota", "Supra", 1995, "ABC321");
-        updatedFromDatabaseAuto.setPrice(1234500);
-        updatedFromDatabaseAuto.setPreowned(Preowned.CPO);
+        automobile.setPrice(1234500);
+        automobile.setPreowned(Preowned.CPO);
+        automobile.setGrade(Grade.EXCELLENT);
 
-        when(autosRepository.save(any(Automobile.class))).thenReturn(updatedFromDatabaseAuto);
+        when(autosRepository.save(any(Automobile.class))).thenReturn(automobile);
 
-        assertThat(automobile.getPrice()).isEqualTo(0);
+        Automobile actual = autosService.updateAuto(automobile.getVin(), 1234500, Preowned.CPO, Grade.EXCELLENT);
 
-        automobile = autosService.updateAuto(automobile.getVin(), 1234500, Preowned.CPO);
-
-        assertThat(automobile).isNotNull();
-        assertThat(automobile.getVin()).isEqualTo(automobile.getVin());
-        assertThat(automobile.getPrice()).isEqualTo(1234500);
-        assertThat(automobile.getPreowned()).isEqualTo(automobile.getPreowned());
+        assertThat(actual).isNotNull();
+        assertThat(actual.getVin()).isEqualTo(automobile.getVin());
+        assertThat(actual.getPrice()).isEqualTo(1234500);
+        assertThat(actual.getPreowned()).isEqualTo(automobile.getPreowned());
+        assertThat(actual.getGrade()).isEqualTo(automobile.getGrade());
     }
 
     @Test
     void updateAuto_noContent_returnsNull() {
         when(autosRepository.findByVin(anyString())).thenReturn(java.util.Optional.empty());
 
-        automobile = autosService.updateAuto(automobile.getVin(), 1234500, Preowned.CPO);
+        Automobile actual = autosService.updateAuto(automobile.getVin(), 1234500, Preowned.CPO, Grade.EXCELLENT);
 
-        assertThat(automobile).isNull();
+        assertThat(actual).isNull();
     }
 
     @Test
     void updateAuto_badRequest_throwsInvalidAutoException() {
         assertThatExceptionOfType(InvalidAutoException.class)
                 .isThrownBy(() -> {
-                    autosService.updateAuto("$BADVIN", 1234500, Preowned.CPO);
+                    autosService.updateAuto("$BADVIN", 1234500, Preowned.CPO, Grade.EXCELLENT);
                 });
     }
 

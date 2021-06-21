@@ -1,6 +1,9 @@
-package com.galvanize.autos;
+package com.galvanize.autos.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.galvanize.autos.exception.InvalidAutoException;
+import com.galvanize.autos.model.*;
+import com.galvanize.autos.service.AutosService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +19,11 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AutosController.class)
 public class AutosControllerTests {
-
     @Autowired
     MockMvc mockMvc;
 
@@ -45,7 +46,7 @@ public class AutosControllerTests {
         }
 
         automobile = new Automobile("Toyota", "Supra", 1995, "ABC321");
-        updateAutoRequest = new UpdateAutoRequest(1234500, Preowned.CPO);
+        updateAutoRequest = new UpdateAutoRequest(1234500, Preowned.CPO, Grade.EXCELLENT);
         objectMapper = new ObjectMapper();
     }
 
@@ -117,21 +118,22 @@ public class AutosControllerTests {
     void updateAuto_withObject_returnsAuto() throws Exception {
         automobile.setPrice(updateAutoRequest.getPrice());
         automobile.setPreowned(updateAutoRequest.getPreowned());
+        automobile.setGrade(updateAutoRequest.getGrade());
 
-        when(autosService.updateAuto(anyString(), anyInt(), any(Preowned.class))).thenReturn(automobile);
+        when(autosService.updateAuto(anyString(), anyInt(), any(Preowned.class), any(Grade.class))).thenReturn(automobile);
 
         mockMvc.perform(patch("/autos/"+automobile.getVin())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateAutoRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("price").value(automobile.getPrice()))
-                .andExpect(jsonPath("preowned").value(automobile.getPreowned().toString()));
+                .andExpect(jsonPath("preowned").value(automobile.getPreowned().toString()))
+                .andExpect(jsonPath("grade").value(automobile.getGrade().toString()));
     }
 
-    // UPDATE localhost:3000/autos/VIN_THATS_NOT_IN_DB/?price=1234500
     @Test
     void updateAuto_notFound_returns204() throws Exception{
-        when(autosService.updateAuto(anyString(), anyInt(), any(Preowned.class))).thenReturn(null);
+        when(autosService.updateAuto(anyString(), anyInt(), any(Preowned.class), any(Grade.class))).thenReturn(null);
 
         mockMvc.perform(patch("/autos/ABC123")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -139,10 +141,9 @@ public class AutosControllerTests {
                 .andExpect(status().isNoContent());
     }
 
-    // UPDATE localhost:3000/autos/GOODVIN/?somethingthatdoesntexist=1234500
     @Test
     void updateAuto_badRequest_returns400() throws Exception {
-        when(autosService.updateAuto(anyString(), anyInt(), any(Preowned.class))).thenThrow(InvalidAutoException.class); // Why different from line 165?
+        when(autosService.updateAuto(anyString(), anyInt(), any(Preowned.class), any(Grade.class))).thenThrow(InvalidAutoException.class);
 
         mockMvc.perform(patch("/autos/BADVIN")
                 .contentType(MediaType.APPLICATION_JSON)

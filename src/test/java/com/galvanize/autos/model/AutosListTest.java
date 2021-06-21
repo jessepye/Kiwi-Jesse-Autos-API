@@ -1,4 +1,4 @@
-package com.galvanize.autos;
+package com.galvanize.autos.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

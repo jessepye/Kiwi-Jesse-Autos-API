@@ -1,4 +1,4 @@
-package com.galvanize.autos;
+package com.galvanize.autos.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AutosList {
-
     private List<Automobile> automobiles;
 
     public AutosList() {

@@ -1,13 +1,14 @@
-package com.galvanize.autos;
+package com.galvanize.autos.model;
 
-@SuppressWarnings("unused")
 public class UpdateAutoRequest {
     private int price;
     private Preowned preowned;
+    private Grade grade;
 
-    public UpdateAutoRequest(int price, Preowned preowned) {
+    public UpdateAutoRequest(int price, Preowned preowned, Grade grade) {
         this.price = price;
         this.preowned = preowned;
+        this.grade = grade;
     }
 
     public int getPrice() {
@@ -24,5 +25,13 @@ public class UpdateAutoRequest {
 
     public void setPreowned(Preowned preowned) {
         this.preowned = preowned;
+    }
+
+    public Grade getGrade() {
+        return grade;
+    }
+
+    public void setGrade(Grade grade) {
+        this.grade = grade;
     }
 }

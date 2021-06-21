@@ -1,5 +1,6 @@
-package com.galvanize.autos;
+package com.galvanize.autos.repository;
 
+import com.galvanize.autos.model.Automobile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

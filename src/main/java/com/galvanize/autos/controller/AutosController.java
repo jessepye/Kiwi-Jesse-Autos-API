@@ -1,5 +1,10 @@
-package com.galvanize.autos;
+package com.galvanize.autos.controller;
 
+import com.galvanize.autos.exception.InvalidAutoException;
+import com.galvanize.autos.model.Automobile;
+import com.galvanize.autos.model.AutosList;
+import com.galvanize.autos.model.UpdateAutoRequest;
+import com.galvanize.autos.service.AutosService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/autos")
 public class AutosController {
-
     AutosService autosService;
 
     public AutosController(AutosService autosService) {
@@ -37,14 +41,13 @@ public class AutosController {
 
     @GetMapping("/{vin}")
     public ResponseEntity<Automobile> getAuto(@PathVariable String vin) {
-
         return autosService.getAuto(vin) == null ?
                 ResponseEntity.noContent().build() : ResponseEntity.ok(autosService.getAuto(vin));
     }
 
     @PatchMapping("/{vin}")
     public ResponseEntity<Automobile> updateAuto(@PathVariable String vin, @RequestBody UpdateAutoRequest update) {
-        Automobile automobile = autosService.updateAuto(vin, update.getPrice(), update.getPreowned());
+        Automobile automobile = autosService.updateAuto(vin, update.getPrice(), update.getPreowned(), update.getGrade());
 
         return automobile == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(automobile);
     }
@@ -61,7 +64,5 @@ public class AutosController {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public void invalidAutoExceptionHandler(InvalidAutoException e) {
-
-    }
+    public void invalidAutoExceptionHandler(InvalidAutoException e) {}
 }

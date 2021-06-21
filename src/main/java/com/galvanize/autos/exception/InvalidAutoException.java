@@ -1,4 +1,4 @@
-package com.galvanize.autos;
+package com.galvanize.autos.exception;
 
 public class InvalidAutoException extends RuntimeException {
 }

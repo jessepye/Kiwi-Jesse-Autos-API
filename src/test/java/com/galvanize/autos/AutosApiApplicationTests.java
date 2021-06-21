@@ -1,5 +1,8 @@
 package com.galvanize.autos;
 
+import com.galvanize.autos.model.Automobile;
+import com.galvanize.autos.model.AutosList;
+import com.galvanize.autos.repository.AutosRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +19,6 @@ import java.util.Random;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @TestPropertySource(locations= "classpath:application-test.properties")
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AutosApiApplicationTests {
 
