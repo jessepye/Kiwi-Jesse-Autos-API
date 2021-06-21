@@ -226,6 +226,9 @@ components:
         preowned:
           type: string
           enum: [ no, yes, cpo ]
+        grade:
+          type: string
+          enum: [excellent, great, good, fair, poor]
     Error-Message:
       type: object
       required:
